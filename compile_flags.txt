@@ -1,0 +1,3 @@
+-Isrc/third-party
+-Isrc
+-xc++
