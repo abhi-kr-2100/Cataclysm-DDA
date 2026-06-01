@@ -679,6 +679,7 @@ enum npc_chat_menu {
     NPC_CHAT_START_SEMINAR,
     NPC_CHAT_SENTENCE,
     NPC_CHAT_GUARD,
+    NPC_CHAT_CONTROL,
     NPC_CHAT_MOVE_TO_POS,
     NPC_CHAT_FOLLOW,
     NPC_CHAT_AWAKE,
@@ -1204,6 +1205,10 @@ void game::chat( const std::optional<tripoint_bub_ms> &p )
                         string_format( _( "Tell %s to guard" ), followers.front()->get_name() ) :
                         _( "Tell someone to guard…" )
                       );
+        nmenu.addentry( NPC_CHAT_CONTROL, true, 'c', follower_count == 1 ?
+                        string_format( _( "Take control of %s" ), followers.front()->get_name() ) :
+                        _( "Take control of someone…" )
+                      );
         nmenu.addentry( NPC_CHAT_MOVE_TO_POS, true, 'G',
                         follower_count == 1 ? string_format( _( "Tell %s to move to location" ),
                                 followers.front()->get_name() ) : _( "Tell someone to move to location…" ) );
@@ -1331,6 +1336,14 @@ void game::chat( const std::optional<tripoint_bub_ms> &p )
                 talk_function::assign_guard( *followers[npcselect] );
                 yell_msg = string_format( _( "Guard here, %s!" ), followers[npcselect]->get_name() );
             }
+            break;
+        }
+        case NPC_CHAT_CONTROL: {
+            const int npcselect = npc_select_menu( followers, _( "Who should be controlled?" ), /*everyone=*/false );
+            if( npcselect < 0 ) {
+                return;
+            }
+            get_avatar().control_npc( *followers[npcselect] );
             break;
         }
         case NPC_CHAT_MOVE_TO_POS: {
@@ -9424,4 +9437,3 @@ std::vector<std::string> get_all_talk_topic_ids()
     }
     return dialogue_ids;
 }
-
